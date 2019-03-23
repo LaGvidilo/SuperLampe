@@ -37,7 +37,7 @@ static const unsigned char PROGMEM logo_bmp[] =
 
   
 MQ7 mq7(A1,5.0);
-int IRDetector = A3;
+int IRDetector = A2;
 int photoresistor = A0;
 int LedActivated = 3;
 int LedDay = 5;
@@ -420,7 +420,7 @@ void gas(){
   display.display();
 }
 
-
+int vopass = 0;
 
 void loop() {
   gas();
@@ -445,26 +445,35 @@ void loop() {
   Serial.println(analogRead(photoresistor));
   Serial.print("IR:");
   Serial.println(digitalRead(IRDetector));
+  if (digitalRead(IRDetector) == LOW){
+    vopass = 0;
+  }
   if (digitalRead(IRDetector) == HIGH){
-    testfillcircle();
+    //testfillcircle();
+    vopass = vopass + 1;
+    Serial.print("vopass: ");
+    Serial.println(vopass);
+    delay(1);
     int noll;
-    digitalWrite(LedActivated, HIGH);//Note move
-    digitalWrite(LED_BUILTIN, HIGH);
-    if (analogRead(photoresistor) <= ReferenceValue){
-      digitalWrite(Lamp1, HIGH);
+    if (vopass>3){
+      digitalWrite(LedActivated, HIGH);//Note move
+      digitalWrite(LED_BUILTIN, HIGH);
+      if (analogRead(photoresistor) <= ReferenceValue){
+        digitalWrite(Lamp1, HIGH);
+        gas();
+        delay(1000);
+        digitalWrite(Lamp2, HIGH);
+        gas();
+        delay(300);    
+      }
       gas();
-      delay(1000);
-      digitalWrite(Lamp2, HIGH);
-      gas();
-      delay(300);    
+      for (int i=0; i<3; i++){
+        noll = digitalRead(IRDetector);
+        gas();
+        delay(100);
+      }
+      //delay(30000);
     }
-    gas();
-    for (int i=0; i<300; i++){
-      noll = digitalRead(IRDetector);
-      gas();
-      delay(100);
-    }
-    //delay(30000);
   }
   
   
