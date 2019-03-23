@@ -411,9 +411,10 @@ void gas(){
     display.print("DANGER");
   }
   display.setCursor(1,30);
-  display.print("Un pere exemplaire");
+  //display.print("Un pere exemplaire");
   display.setCursor(1,45);
-  display.print("de Cyril a Francois");
+  //display.print("de Cyril a Francois");
+  display.print("Par Rick Sanchez");
   display.drawLine(0, 55, 128, 55, WHITE);
 
   // update display with all of the above graphics
@@ -445,17 +446,18 @@ void loop() {
   Serial.println(analogRead(photoresistor));
   Serial.print("IR:");
   Serial.println(digitalRead(IRDetector));
+  Serial.print("vopass: ");
+  Serial.println(vopass);
   if (digitalRead(IRDetector) == LOW){
-    vopass = 0;
+    vopass = (vopass - 1)%2;
   }
   if (digitalRead(IRDetector) == HIGH){
     //testfillcircle();
-    vopass = vopass + 1;
-    Serial.print("vopass: ");
-    Serial.println(vopass);
+    vopass = 1+vopass;
+
     delay(1);
     int noll;
-    if (vopass>3){
+    if (vopass>1){
       digitalWrite(LedActivated, HIGH);//Note move
       digitalWrite(LED_BUILTIN, HIGH);
       if (analogRead(photoresistor) <= ReferenceValue){
@@ -467,10 +469,10 @@ void loop() {
         delay(300);    
       }
       gas();
-      for (int i=0; i<3; i++){
-        noll = digitalRead(IRDetector);
+      for (int i=0; i<3000; i++){
+        //noll = digitalRead(IRDetector);
         gas();
-        delay(100);
+        delay(10);
       }
       //delay(30000);
     }
